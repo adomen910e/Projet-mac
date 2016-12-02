@@ -12,19 +12,24 @@
 #include <QPixmap>
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d/features2d.hpp"
-//#include "opencv2/nonfree/features2d.hpp"
+#include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/highgui/highgui.hpp"
-//#include "opencv2/nonfree/nonfree.hpp">
+#include "opencv2/nonfree/nonfree.hpp"
+#include <opencv2/legacy/legacy.hpp>
+
 
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    /* Initialisation */
     nb_label = 0;
     traitement = NULL;
     label = new QLabel(this);
     labeltmp = new QLabel(this);
     label->move(0,30);
+
+    /* Mise en place des boutons */
     aProposAction=new QAction(tr("&A Propos"),this);
     ouvrir=new QAction(tr("&Ouvrir"),this);
     quitter=new QAction(tr("&Quitter"),this);
@@ -38,8 +43,12 @@ MainWindow::MainWindow(QWidget *parent)
     aPropos->addAction(aProposAction);
     fichier->addAction(ouvrir);
     fichier->addAction(quitter);
+
+    /* Initialisation rectangle de selection*/
     widge = new Widget(this);
     this->setCentralWidget(widge);
+
+    /* Connection des boutons*/
     QObject::connect(aProposAction,SIGNAL(triggered()),this,SLOT(afficherMessage()));
     QObject::connect(ouvrir,SIGNAL(triggered()),this,SLOT(openFile()));
     QObject::connect(quitter,SIGNAL(triggered()),this,SLOT(quit()));
@@ -48,26 +57,44 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    aPropos=NULL;
-    fichier=NULL;
-    label=NULL;
-    aProposAction=NULL;
-    canny = NULL;
-    ouvrir=NULL;
-    quitter=NULL;
-    xrec = 0;
-    yrec = 0;
-    nb_label = 0;
-    traitement = NULL;
+
 }
 
 void MainWindow::carteProfondeur(){
 
 }
 
-cv::Mat MainWindow::extractionFeatures(cv::Mat mat){
-    int minHessian = 400;
-    //cv::SurfFeatureDetector detector( minHessian );
+void MainWindow::extractionFeatures( cv::Mat imgD, cv::Mat imgG){
+
+    if(imgD.empty() || imgG.empty())
+    {
+        printf("Can't read one of the images\n");
+    }
+
+    // detecting keypoints
+    cv::SurfFeatureDetector detector(400);
+    cv::vector<cv::KeyPoint> keypoints1, keypoints2;
+    detector.detect(imgD, keypoints1);
+    detector.detect(imgG, keypoints2);
+
+    // computing descriptors
+    cv::SurfDescriptorExtractor extractor;
+    cv::Mat descriptors1, descriptors2;
+    extractor.compute(imgD, keypoints1, descriptors1);
+    extractor.compute(imgG, keypoints2, descriptors2);
+
+    // matching descriptors
+    cv::BruteForceMatcher<cv::L2<float> > matcher;
+    cv::vector<cv::DMatch> matches;
+    matcher.match(descriptors1, descriptors2, matches);
+
+    // drawing the results
+    cv::namedWindow("matches", 1);
+    cv::Mat img_matches;
+    cv::drawMatches(imgD, keypoints1, imgG, keypoints2, matches, img_matches);
+    cv::imshow("matches", img_matches);
+    cv::waitKey(0);
+
 }
 
 

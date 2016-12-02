@@ -20,7 +20,7 @@ public:
     ~MainWindow();
     void afficherMat(cv::Mat mat,QImage::Format format);
     void carteDisparite(cv::Mat matG,cv::Mat matD);
-    cv::Mat extractionFeatures(cv::Mat mat);
+    void extractionFeatures( cv::Mat imgD, cv::Mat imgG);
     cv::Mat correspondanceFeatures(cv::Mat matG,cv::Mat matD);
     cv::Mat estimationTransformation(cv::Mat mat);
 

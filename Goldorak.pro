@@ -11,17 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Goldorak
 TEMPLATE = app
 
-#LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui
-#unix {
-#    CONFIG += link_pkgconfig
-#    PKGCONFIG += opencv
-#}
-
-# The following lines tells Qmake to use pkg-config for opencv
-#QT_CONFIG -= no-pkg-config
-#CONFIG  += link_pkgconfig
-#PKGCONFIG += opencv
-
 INCLUDEPATH +=  "/usr/local/include"
 
 LIBS += "/usr/local/lib/libopencv_calib3d.dylib" \
@@ -35,7 +24,8 @@ LIBS += "/usr/local/lib/libopencv_calib3d.dylib" \
         "/usr/local/lib/libopencv_legacy.dylib" \
         "/usr/local/lib/libopencv_ml.dylib" \
         "/usr/local/lib/libopencv_objdetect.dylib" \
-        "/usr/local/lib/libopencv_video.dylib"
+        "/usr/local/lib/libopencv_video.dylib" \
+        "/usr/local/lib/libopencv_nonfree.dylib"
 
 
 
